@@ -66,8 +66,10 @@ class Adventurer extends Character {
       let enemyRoll = enemy.roll()
       if (myRoll > enemyRoll){
         enemy.health -= 1
+        console.log(`${this.name} dealt 1 damage: ${this.name} has ${this.health} health and ${enemy.name} has ${enemy.health} health`)
       } else if (myRoll < enemyRoll){
         this.health -= 1
+        console.log(`${enemy.name} dealt 1 damage: ${this.name} has ${this.health} health and ${enemy.name} has ${enemy.health} health`)
       }
       //adding healer spells
       if (this.role === 'Healer') {
@@ -88,7 +90,15 @@ class Adventurer extends Character {
         //console.log(`${enemy.name} has health: ${enemy.health}`);
       } 
 
-    console.log(`${this.name} has ${this.health} health and ${enemy.name} has ${enemy.health} health`)
+      //adding assasin attacks 
+      if (this.role === "Assasin") {
+        this.sneakAttack(enemy)
+      }
+
+      if (enemy.role === "Assasin") {
+        enemy.sneakAttack(this)
+      }
+
     }    
 
     if (this.health > 50 && enemy.health < 50) {
@@ -125,6 +135,12 @@ class AdventurerFactory {
     const newFighter = new Fighter(name);
     this.adventurers.push(newFighter);
     return newFighter
+  }
+
+  generateAssasin(name) {
+    const newAssasin = new Assasin(name);
+    this.adventurers.push(newAssasin);
+    return newAssasin
   }
 
   generate(name) {
@@ -170,14 +186,31 @@ class Fighter extends Adventurer {
   }
 }
 
+class Assasin extends Adventurer {
+  constructor (name) {
+    super(name, "Assasin")
+  }
+  sneakAttack(enemy) {
+    const rollResult = this.roll();
+    if (rollResult >= 19) {
+      const hit = 7;
+      enemy.health -= hit;
+      console.log(`${this.name} landed a sneak attack on ${enemy.name}, dealing 10 damage!`)
+    }
+  }
+
+}
+
+
 const healers = new AdventurerFactory("Healer")
 const robin = healers.generateHealer("Robin")
 
 const fighters = new AdventurerFactory('Fighter')
 const alice = fighters.generateFighter("Alice")
-
-
 const tony = fighters.generateFighter("Tony")
+
+const assasin = new AdventurerFactory("Assasin")
+const johnny = assasin.generateAssasin("Johnny")
 
 
 //const robin = new Adventurer('Robin');
@@ -193,7 +226,9 @@ robin.companion.companion.inventory = ["small hat", "sunglasses"];
 //robin.companion.roll()
 
 
-tony.duel(robin)
+//tony.duel(robin)
+
+johnny.duel(robin)
+
 
 //robin.duel(alice)
-
